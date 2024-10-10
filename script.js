@@ -20,18 +20,19 @@ const player1 = {
     speed: 5,
     jumpPower: -15,
     grounded: false,
-  };
+  }
 
 const player2 = {
-    x: 300,
-    y: canvas.height - 150,
-    width: 50, 
-    height: 50, 
-    dx: 0,
-    dy: 0,
-    speed: 5,
-    jumpPower: -15,
-    grounded: false,
+        x: 300,
+        y: canvas.height - 150,
+        width: 50, 
+        height: 50, 
+        dx: 0,
+        dy: 0,
+        speed: 5,
+        jumpPower: -15,
+        grounded: false,
+        z-index:9999;
     };
 
 const platform = {
