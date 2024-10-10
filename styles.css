@@ -11,11 +11,14 @@ body {
     height: 100%;
 }
 
-.characters {
+.player1 {
     position: relative;
     z-index: 2; /* Higher index for characters */
 }
-
+.player2 {
+    position: relative;
+    z-index: 2; /* Higher index for characters */
+}
 .sky {
     background: linear-gradient(to top, #87CEEB 0%, #A9D8E5 100%);
     position: absolute;
