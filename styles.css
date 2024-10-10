@@ -1,41 +1,86 @@
 body {
     margin: 0;
-    height: 100vh;
-    background: #0a0a0a; /* Dark background */
-    overflow: hidden; /* Prevent scrolling */
+    overflow: hidden;
 }
 
-.digital-city {
+.sky {
+    background: #87CEEB;
+    height: 100vh;
     position: relative;
+}
+
+.cloud {
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.cloud2 {
+    top: 50px;
+    left: 200px;
+}
+
+.cloud {
+    width: 100px;
+    height: 60px;
+    top: 20px;
+    left: 50px;
+}
+
+.city {
+    position: absolute;
+    bottom: 0;
     width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, #1c1c1c, #0a0a0a);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
 }
 
 .building {
-    position: absolute;
-    bottom: 0;
-    width: 50px;
-    background: linear-gradient(to top, #3b3b3b, #4e4e4e);
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+    background: #7D9EC0;
+    border: 2px solid #4D6E82;
+    width: 80px;
+    height: 200px;
+    border-radius: 5px;
+    position: relative;
 }
 
-.building:nth-child(1) { height: 150px; left: 100px; }
-.building:nth-child(2) { height: 200px; left: 200px; }
-.building:nth-child(3) { height: 100px; left: 300px; }
-.building:nth-child(4) { height: 250px; left: 400px; }
-.building:nth-child(5) { height: 180px; left: 500px; }
-.building:nth-child(6) { height: 220px; left: 600px; }
-.building:nth-child(7) { height: 300px; left: 700px; }
-.building:nth-child(8) { height: 160px; left: 800px; }
-
-.city-lights {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 10px;
-    background: rgba(0, 255, 0, 0.5);
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+.building1 {
+    height: 180px;
 }
 
+.building2 {
+    height: 220px;
+}
+
+.building3 {
+    height: 250px;
+}
+
+.building4 {
+    height: 210px;
+}
+
+.tree {
+    width: 30px;
+    height: 60px;
+    background: #8B4513;
+    position: relative;
+}
+
+.tree:before {
+    content: '';
+    width: 70px;
+    height: 70px;
+    background: #228B22;
+    border-radius: 50%;
+    position: absolute;
+    left: -20px;
+    top: -40px;
+}
+
+.tree2 {
+    left: 70%;
+    bottom: 20px;
+}
