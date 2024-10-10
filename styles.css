@@ -36,21 +36,18 @@ body {
     width: 80px;
     height: 200px;
     background: linear-gradient(to bottom, #4CAF50, #388E3C);
-    z-index: 1;
 }
 
 .medium {
     width: 60px;
     height: 150px;
     background: linear-gradient(to bottom, #FF5722, #D84315);
-    z-index: 1;
 }
 
 .short {
     width: 40px;
     height: 100px;
     background: linear-gradient(to bottom, #2196F3, #1976D2);
-    z-index: 1;
 }
 
 
