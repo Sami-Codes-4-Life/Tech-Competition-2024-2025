@@ -7,37 +7,37 @@ canvas.height = window.innerHeight;
 let gravity = 0.8;
 let friction = 0.9;
 
+const spriteImage = new Image();
+spriteImage.src = "http://www.avatarsinpixels.com/minipix/eyJQYW50cyI6IjEiLCJKYWNrZXQiOiI0IiwiSGF0IjoiNSJ9/1/show.png";
+
 const player1 = {
     x: 100,
     y: canvas.height - 150,
-    width: 50,
-    height: 50,
+    width: 50, 
+    height: 50, 
     dx: 0,
     dy: 0,
     speed: 5,
     jumpPower: -15,
     grounded: false,
-    color: "#1976d2",
 };
 
 const player2 = {
     x: 300,
     y: canvas.height - 150,
-    width: 50,
-    height: 50,
+    width: 50, 
+    height: 50, 
     dx: 0,
     dy: 0,
     speed: 5,
     jumpPower: -15,
     grounded: false,
-    color: "#388e3c",
 };
-
 
 const platform = {
     x: 50,
     y: canvas.height - 100,
-    width: 1600,  
+    width: 800,
     height: 20,
     color: "#0d47a1",
 };
@@ -145,14 +145,11 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = player1.color;
-    ctx.fillRect(player1.x, player1.y, player1.width, player1.height);
-
-    ctx.fillStyle = player2.color;
-    ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
-
     ctx.fillStyle = platform.color;
     ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+
+    ctx.drawImage(spriteImage, player1.x, player1.y, player1.width, player1.height);
+    ctx.drawImage(spriteImage, player2.x, player2.y, player2.width, player2.height);
 }
 
 function gameLoop() {
@@ -160,4 +157,4 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+spriteImage.onload = gameLoop;
