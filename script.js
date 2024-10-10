@@ -20,8 +20,7 @@ const player1 = {
     speed: 5,
     jumpPower: -15,
     grounded: false,
-    z-index: 9999;
-};
+  };
 
 const player2 = {
     x: 300,
@@ -33,8 +32,7 @@ const player2 = {
     speed: 5,
     jumpPower: -15,
     grounded: false,
-    z-index: 9999;
-};
+    };
 
 const platform = {
     x: 50,
