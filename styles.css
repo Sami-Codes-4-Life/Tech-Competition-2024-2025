@@ -3,6 +3,19 @@ body {
     overflow: hidden;
 }
 
+
+.background {
+    position: fixed;
+    z-index: 1; /* Lower index for background */
+    width: 100%;
+    height: 100%;
+}
+
+.characters {
+    position: relative;
+    z-index: 2; /* Higher index for characters */
+}
+
 .sky {
     background: linear-gradient(to top, #87CEEB 0%, #A9D8E5 100%);
     position: absolute;
