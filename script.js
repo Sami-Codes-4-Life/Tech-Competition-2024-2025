@@ -32,7 +32,6 @@ const player2 = {
         speed: 5,
         jumpPower: -15,
         grounded: false,
-        z-index:9999;
     };
 
 const platform = {
