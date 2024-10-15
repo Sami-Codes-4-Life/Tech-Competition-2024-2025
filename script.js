@@ -10,6 +10,10 @@ let friction = 0.9;
 const spriteImage = new Image();
 spriteImage.src = "http://www.avatarsinpixels.com/minipix/eyJQYW50cyI6IjEiLCJKYWNrZXQiOiI0IiwiSGF0IjoiNSJ9/1/show.png";
 
+spriteImage.onerror = () => {
+    console.error("Image failed to load.");
+};
+
 const player1 = {
     x: 100,
     y: canvas.height - 150,
@@ -20,19 +24,19 @@ const player1 = {
     speed: 5,
     jumpPower: -15,
     grounded: false,
-  }
+};
 
 const player2 = {
-        x: 300,
-        y: canvas.height - 150,
-        width: 50, 
-        height: 50, 
-        dx: 0,
-        dy: 0,
-        speed: 5,
-        jumpPower: -15,
-        grounded: false,
-    };
+    x: 300,
+    y: canvas.height - 150,
+    width: 50, 
+    height: 50, 
+    dx: 0,
+    dy: 0,
+    speed: 5,
+    jumpPower: -15,
+    grounded: false,
+};
 
 const platform = {
     x: 50,
@@ -40,7 +44,6 @@ const platform = {
     width: 800,
     height: 20,
     color: "#0d47a1",
-    z-index: 9999;
 };
 
 const keys = {
@@ -80,7 +83,7 @@ function update() {
     } else if (keys.left1) {
         player1.dx = -player1.speed;
     } else {
-        player1.dx *= friction;
+        player1.dx = 0; // Reset dx to prevent sliding
     }
 
     if (keys.right2) {
@@ -88,7 +91,7 @@ function update() {
     } else if (keys.left2) {
         player2.dx = -player2.speed;
     } else {
-        player2.dx *= friction;
+        player2.dx = 0; // Reset dx to prevent sliding
     }
 
     player1.dy += gravity;
@@ -100,6 +103,7 @@ function update() {
     player1.y += player1.dy;
     player2.y += player2.dy;
 
+    // Collision detection with platform
     if (player1.y + player1.height >= platform.y && player1.x + player1.width >= platform.x && player1.x <= platform.x + platform.width) {
         player1.y = platform.y - player1.height;
         player1.dy = 0;
@@ -116,6 +120,7 @@ function update() {
         player2.grounded = false;
     }
 
+    // Prevent players from falling below the ground
     if (player1.y + player1.height >= canvas.height) {
         player1.y = canvas.height - player1.height;
         player1.dy = 0;
@@ -128,6 +133,7 @@ function update() {
         player2.grounded = true;
     }
 
+    // Prevent players from going off-screen
     if (player1.x < 0) {
         player1.x = 0;
     } else if (player1.x + player1.width > canvas.width) {
@@ -158,4 +164,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-spriteImage.onload = gameLoop;
+spriteImage.onload = () => {
+    gameLoop();
+    console.log("Game loop started.");
+};
