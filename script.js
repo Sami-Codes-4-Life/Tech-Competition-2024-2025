@@ -40,6 +40,7 @@ const platform = {
     width: 800,
     height: 20,
     color: "#0d47a1",
+    z-index: 9999;
 };
 
 const keys = {
