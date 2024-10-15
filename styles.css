@@ -1,1 +1,90 @@
+/* this is like a sunset kinda thing*/
+body {
+    margin: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+
+}
+.sky {
+    background: linear-gradient(to top, #87CEEB 0%, #A9D8E5 100%);
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+}
+
+.city {
+    position: absolute;
+    bottom: 150px; 
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    z-index: 1;
+}
+
+.building {
+    border-radius: 5px 5px 0 0;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.tall {
+    width: 80px;
+    height: 200px;
+    background: linear-gradient(to bottom, #4CAF50, #388E3C);
+}
+
+.medium {
+    width: 60px;
+    height: 150px;
+    background: linear-gradient(to bottom, #FF5722, #D84315);
+}
+
+.short {
+    width: 40px;
+    height: 100px;
+    background: linear-gradient(to bottom, #2196F3, #1976D2);
+}
+
+
+.building::before {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    left: 10%;
+    top: 10%;
+    border-radius: 3px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.building::after {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 10%;
+    background: rgba(255, 255, 255, 0.9);
+    left: 10%;
+    bottom: 10%;
+    border-radius: 3px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+
+.ground {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 150px;
+    background:#56BA3F;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
 
