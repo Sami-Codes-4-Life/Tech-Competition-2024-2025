@@ -4,7 +4,9 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let gravity = 0.8;
+// Adjust gravity and add fall speed modifier
+let gravity = 1.5; // Original gravity
+let fallSpeedModifier = 0.4; // Slow down the fall speed
 let friction = 0.9;
 
 const spriteImage = new Image();
@@ -17,8 +19,8 @@ spriteImage.onerror = () => {
 const player1 = {
     x: 100,
     y: canvas.height - 150,
-    width: 50, 
-    height: 50, 
+    width: 85, 
+    height: 85, 
     dx: 0,
     dy: 0,
     speed: 5,
@@ -29,8 +31,8 @@ const player1 = {
 const player2 = {
     x: 300,
     y: canvas.height - 150,
-    width: 50, 
-    height: 50, 
+    width: 85, 
+    height: 85, 
     dx: 0,
     dy: 0,
     speed: 5,
@@ -41,10 +43,20 @@ const player2 = {
 const platform = {
     x: 50,
     y: canvas.height - 100,
-    width: 800,
+    width: 800000,
     height: 20,
-    color: "#0d47a1",
+    color: "#006400",
 };
+
+
+// Wall object
+const wall = {
+    x: 400, // X position of the wall
+    y: canvas.height - 100, // Y position of the wall
+    width: 20, // Width of the wall
+    height: 125, // Height of the wall
+    color: "#FF5722", // Color of the wall
+}
 
 const keys = {
     right1: false,
@@ -53,6 +65,14 @@ const keys = {
     right2: false,
     left2: false,
     up2: false,
+};
+
+// Camera object
+const camera = {
+    x: 0,
+    y: 0,
+    width: canvas.width,
+    height: canvas.height,
 };
 
 document.addEventListener("keydown", (event) => {
@@ -77,6 +97,39 @@ document.addEventListener("keyup", (event) => {
     if (event.code === "KeyA") keys.left2 = false;
 });
 
+function updateCamera() {
+    // Center the camera on player1
+    camera.x = player1.x + player1.width / 2 - camera.width / 2;
+    camera.y = player1.y + player1.height / 2 - camera.height / 2;
+
+    // Optional: Limit camera movement within the game world
+    camera.x = Math.max(0, Math.min(camera.x, canvas.width - camera.width));
+    camera.y = Math.max(0, Math.min(camera.y, canvas.height - camera.height));
+}
+
+function checkWallCollision(player) {
+    if (player.x + player.width >= wall.x && 
+        player.x <= wall.x + wall.width && 
+        player.y + player.height >= wall.y - wall.height && 
+        player.y <= wall.y) {
+        
+        // Check if the player is falling down
+        if (player.dy > 0) {
+            player.y = wall.y - player.height; // Place player on top of the wall
+            player.dy = 0; // Reset the vertical velocity
+            player.grounded = true; // Set grounded to true
+        } else {
+            // Handle player hitting the wall horizontally
+            if (player.x < wall.x) {
+                player.x = wall.x - player.width; // Move player to the left of the wall
+            } else {
+                player.x = wall.x + wall.width; // Move player to the right of the wall
+            }
+            player.dx = 0; // Stop player movement
+        }
+    }
+}
+
 function update() {
     if (keys.right1) {
         player1.dx = player1.speed;
@@ -94,8 +147,14 @@ function update() {
         player2.dx = 0; // Reset dx to prevent sliding
     }
 
-    player1.dy += gravity;
-    player2.dy += gravity;
+    // Modify gravity application to use the fall speed modifier
+    if (!player1.grounded) {
+        player1.dy += gravity * fallSpeedModifier; // Slow down falling
+    }
+    
+    if (!player2.grounded) {
+        player2.dy += gravity * fallSpeedModifier; // Slow down falling
+    }
 
     player1.x += player1.dx;
     player2.x += player2.dx;
@@ -119,6 +178,10 @@ function update() {
     } else {
         player2.grounded = false;
     }
+
+    // Check collisions with the wall
+    checkWallCollision(player1);
+    checkWallCollision(player2);
 
     // Prevent players from falling below the ground
     if (player1.y + player1.height >= canvas.height) {
@@ -146,17 +209,28 @@ function update() {
         player2.x = canvas.width - player2.width;
     }
 
+    updateCamera(); // Update camera position
     draw();
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Adjust drawing to camera
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
+    
     ctx.fillStyle = platform.color;
     ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
 
+    // Draw the wall
+    ctx.fillStyle = wall.color;
+    ctx.fillRect(wall.x, wall.y - wall.height, wall.width, wall.height); // Draw the wall
+
     ctx.drawImage(spriteImage, player1.x, player1.y, player1.width, player1.height);
     ctx.drawImage(spriteImage, player2.x, player2.y, player2.width, player2.height);
+    
+    ctx.restore();
 }
 
 function gameLoop() {
