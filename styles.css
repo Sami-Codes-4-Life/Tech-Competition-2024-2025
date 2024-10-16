@@ -87,5 +87,4 @@ body {
 canvas {
     position: relative;
     z-index: 2; /* Ensure canvas is above other elements */
-    background-color: #fff; /* For visibility during development */
 }
