@@ -4,15 +4,23 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let gravity = 1.5;
-let fallSpeedModifier = 0.4;
+let gravity = 1.5; // Original gravity
+let fallSpeedModifier = 0.4; // Slow down the fall speed
 let friction = 0.9;
 
-const spriteImage = new Image();
-spriteImage.src = "http://www.avatarsinpixels.com/minipix/eyJQYW50cyI6IjEiLCJKYWNrZXQiOiI0IiwiSGF0IjoiNSJ9/1/show.png";
+// Load new sprite images for characters
+const player1Image = new Image();
+player1Image.src = "https://www.avatarsinpixels.com/minipix/eyJTaG9lcyI6IjEiLCJQYW50cyI6IjEiLCJKYWNrZXQiOiIyIiwiSGF0IjoiNSIsImV5ZXNUb25lIjoiMDBhZWVmIiwicGFudHNUb25lIjoiMDA5OWRkIiwicGFudHNUb25lMiI6IjAwOTlkZCIsInNob2VzVG9uZSI6IjAwOTlkZCIsImhhdFRvbmUiOiIwMDk5ZGQiLCJoYXRUb25lMiI6IjAwYWVlZiIsImphY2tldFRvbmUiOiIwMDk5ZGQiLCJqYWNrZXRUb25lMiI6IjAwOTlkZCJ9/1/show.png";
 
-spriteImage.onerror = () => {
-    console.error("Image failed to load.");
+const player2Image = new Image();
+player2Image.src = "https://www.avatarsinpixels.com/minipix/eyJTaG9lcyI6IjEiLCJQYW50cyI6IjEiLCJKYWNrZXQiOiIyIiwiSGF0IjoiNSIsImV5ZXNUb25lIjoiMDBhZWVmIiwicGFudHNUb25lIjoiZGQwMDAwIiwicGFudHNUb25lMiI6ImRkMDAwMCIsInNob2VzVG9uZSI6ImRkMDAwMCIsImhhdFRvbmUiOiJkZDAwMDAiLCJoYXRUb25lMiI6ImRkMDAwMCIsImphY2tldFRvbmUiOiJkZDAwMDAiLCJqYWNrZXRUb25lMiI6ImRkMDAwMCJ9/1/show.png";
+
+player1Image.onerror = () => {
+    console.error("Player 1 image failed to load.");
+};
+
+player2Image.onerror = () => {
+    console.error("Player 2 image failed to load.");
 };
 
 const player1 = {
@@ -22,7 +30,7 @@ const player1 = {
     height: 85, 
     dx: 0,
     dy: 0,
-    speed: 5,
+    speed: 5, // Reset speed for player1
     jumpPower: -15,
     grounded: false,
 };
@@ -34,7 +42,7 @@ const player2 = {
     height: 85, 
     dx: 0,
     dy: 0,
-    speed: 5,
+    speed: 5, // Reset speed for player2
     jumpPower: -15,
     grounded: false,
 };
@@ -47,15 +55,18 @@ const platform = {
     color: "#006400",
 };
 
-// Moving wall object
-const movingWall = {
-    x: 400,
+// Moving wall 1
+let movingWall = {
+    x: canvas.width, // Start from the right edge of the screen
     y: canvas.height - 100,
     width: 20,
     height: 125,
     color: "#FF5722",
-    dx: 2, // Speed of the moving wall
+    dx: -3, // Speed for the first wall
 };
+
+// Moving wall 2 (faster and shorter)
+let movingWall2 = null; // Initially set to null, will be created after movingWall disappears
 
 const keys = {
     right1: false,
@@ -124,13 +135,29 @@ function checkWallCollision(player, wall) {
     }
 }
 
-// Update function for the moving wall
-function updateMovingWall() {
-    movingWall.x += movingWall.dx;
+// Update function for the moving walls
+function updateMovingWalls() {
+    if (movingWall) {
+        movingWall.x += movingWall.dx;
+        if (movingWall.x + movingWall.width < 0) {
+            movingWall = null; // Remove the wall (it disappears)
+            // Create the second moving wall after the first disappears
+            movingWall2 = {
+                x: canvas.width, // Start from the right edge of the screen
+                y: canvas.height - 100,
+                width: 20,
+                height: 75, // Shorter than the first wall
+                color: "#FF0000", // Different color
+                dx: -5, // Speed for the second wall
+            };
+        }
+    }
 
-    // Reverse direction when the wall hits the edge of the screen
-    if (movingWall.x + movingWall.width > canvas.width || movingWall.x < 0) {
-        movingWall.dx = -movingWall.dx;
+    if (movingWall2) {
+        movingWall2.x += movingWall2.dx;
+        if (movingWall2.x + movingWall2.width < 0) {
+            movingWall2 = null; // Remove the second wall (it disappears)
+        }
     }
 }
 
@@ -182,12 +209,19 @@ function update() {
         player2.grounded = false;
     }
 
-    // Check collisions with the moving wall
-    checkWallCollision(player1, movingWall);
-    checkWallCollision(player2, movingWall);
+    // Check collisions with both moving walls
+    if (movingWall) {
+        checkWallCollision(player1, movingWall);
+        checkWallCollision(player2, movingWall);
+    }
 
-    // Update the moving wall
-    updateMovingWall();
+    if (movingWall2) {
+        checkWallCollision(player1, movingWall2);
+        checkWallCollision(player2, movingWall2);
+    }
+
+    // Update the moving walls
+    updateMovingWalls();
 
     // Prevent players from falling below the ground
     if (player1.y + player1.height >= canvas.height) {
@@ -215,26 +249,35 @@ function update() {
         player2.x = canvas.width - player2.width;
     }
 
-    updateCamera(); 
+    updateCamera(); // Update camera position
     draw();
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Adjust drawing to camera
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
-
+    
     ctx.fillStyle = platform.color;
     ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
 
-    // Draw the moving wall
-    ctx.fillStyle = movingWall.color;
-    ctx.fillRect(movingWall.x, movingWall.y - movingWall.height, movingWall.width, movingWall.height);
+    // Draw the moving walls
+    if (movingWall) {
+        ctx.fillStyle = movingWall.color;
+        ctx.fillRect(movingWall.x, movingWall.y - movingWall.height, movingWall.width, movingWall.height); // Draw the first moving wall
+    }
 
-    ctx.drawImage(spriteImage, player1.x, player1.y, player1.width, player1.height);
-    ctx.drawImage(spriteImage, player2.x, player2.y, player2.width, player2.height);
+    if (movingWall2) {
+        ctx.fillStyle = movingWall2.color;
+        ctx.fillRect(movingWall2.x, movingWall2.y - movingWall2.height, movingWall2.width, movingWall2.height); // Draw the second moving wall
+    }
 
+    // Draw characters
+    ctx.drawImage(player1Image, player1.x, player1.y, player1.width, player1.height);
+    ctx.drawImage(player2Image, player2.x, player2.y, player2.width, player2.height);
+    
     ctx.restore();
 }
 
@@ -243,7 +286,9 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-spriteImage.onload = () => {
-    gameLoop();
-    console.log("Game loop started.");
+player1Image.onload = () => {
+    player2Image.onload = () => {
+        gameLoop();
+        console.log("Game loop started.");
+    };
 };
