@@ -6,7 +6,6 @@ canvas.height = window.innerHeight;
 
 let gravity = 1.5;
 let fallSpeedModifier = 0.4;
-let friction = 0.9;
 
 const player1Image = new Image();
 player1Image.src = "https://www.avatarsinpixels.com/minipix/eyJTaG9lcyI6IjEiLCJQYW50cyI6IjEiLCJKYWNrZXQiOiIyIiwiSGF0IjoiNSIsImV5ZXNUb25lIjoiMDBhZWVmIiwicGFudHNUb25lIjoiMDA5OWRkIiwicGFudHNUb25lMiI6IjAwOTlkZCIsInNob2VzVG9uZSI6IjAwOTlkZCIsImhhdFRvbmUiOiIwMDk5ZGQiLCJoYXRUb25lMiI6IjAwYWVlZiIsImphY2tldFRvbmUiOiIwMDk5ZGQiLCJqYWNrZXRUb25lMiI6IjAwOTlkZCJ9/1/show.png";
@@ -14,22 +13,14 @@ player1Image.src = "https://www.avatarsinpixels.com/minipix/eyJTaG9lcyI6IjEiLCJQ
 const player2Image = new Image();
 player2Image.src = "https://www.avatarsinpixels.com/minipix/eyJTaG9lcyI6IjEiLCJQYW50cyI6IjEiLCJKYWNrZXQiOiIyIiwiSGF0IjoiNSIsImV5ZXNUb25lIjoiMDBhZWVmIiwicGFudHNUb25lIjoiZGQwMDAwIiwicGFudHNUb25lMiI6ImRkMDAwMCIsInNob2VzVG9uZSI6ImRkMDAwMCIsImhhdFRvbmUiOiJkZDAwMDAiLCJoYXRUb25lMiI6ImRkMDAwMCIsImphY2tldFRvbmUiOiJkZDAwMDAiLCJqYWNrZXRUb25lMiI6ImRkMDAwMCJ9/1/show.png";
 
-player1Image.onerror = () => {
-    console.error("Player 1 image failed to load.");
-};
-
-player2Image.onerror = () => {
-    console.error("Player 2 image failed to load.");
-};
-
 const player1 = {
     x: 100,
     y: canvas.height - 150,
-    width: 85, 
-    height: 85, 
+    width: 85,
+    height: 85,
     dx: 0,
     dy: 0,
-    speed: 4,
+    speed: 7, 
     jumpPower: -15,
     grounded: false,
 };
@@ -37,11 +28,11 @@ const player1 = {
 const player2 = {
     x: 300,
     y: canvas.height - 150,
-    width: 85, 
-    height: 85, 
+    width: 85,
+    height: 85,
     dx: 0,
     dy: 0,
-    speed: 4,
+    speed: 7, 
     jumpPower: -15,
     grounded: false,
 };
@@ -49,24 +40,24 @@ const player2 = {
 const platform = {
     x: 50,
     y: canvas.height - 100,
-    width: 800000,
-    height: 20,
+    width: 500000, 
+    height: 10, 
     color: "#006400",
 };
 
 let movingWalls = [
-    { x: canvas.width, y: canvas.height - 100, width: 20, height: 125, color: "#FF5722", dx: -2 },
+    { x: canvas.width, y: canvas.height - 100, width: 20, height: 125, color: "#FF5722", dx: -5 }
 ];
 
 let platformCounter = 0;
 let platforms = [];
 
 const initialPlatforms = [
-    { x: 200, y: canvas.height - 200, width: 100, height: 15, color: "#0000FF" },
-    { x: 400, y: canvas.height - 250, width: 120, height: 15, color: "#FF0000" },
-    { x: 600, y: canvas.height - 300, width: 150, height: 15, color: "#FFFF00" },
-    { x: 800, y: canvas.height - 350, width: 120, height: 15, color: "#00FF00" },
-    { x: 1000, y: canvas.height - 400, width: 150, height: 15, color: "#FF00FF" },
+    { x: 100, y: canvas.height - 200, width: 100, height: 10, color: "#0000FF" },
+    { x: 400, y: canvas.height - 250, width: 120, height: 10, color: "#FF0000" },
+    { x: 700, y: canvas.height - 300, width: 120, height: 10, color: "#FFFF00" },
+    { x: 1000, y: canvas.height - 350, width: 120, height: 10, color: "#00FF00" },
+    { x: 1300, y: canvas.height - 400, width: 120, height: 10, color: "#FF00FF" }
 ];
 
 const keys = {
@@ -149,7 +140,7 @@ function updateMovingWalls() {
                         width: 20,
                         height: 120 - (i * 12),
                         color: i === 0 ? "#51414F" : (i === 1 ? "#7B3F00" : "#FFFF00"),
-                        dx: -(1 + i)
+                        dx: -(3 + i) 
                     };
                 }
             }
