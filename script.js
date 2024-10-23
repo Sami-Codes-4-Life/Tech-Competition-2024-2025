@@ -8,7 +8,6 @@ let gravity = 1.5; // Original gravity
 let fallSpeedModifier = 0.4; // Slow down the fall speed
 let friction = 0.9;
 
-// Load new sprite images for characters
 const player1Image = new Image();
 player1Image.src = "https://www.avatarsinpixels.com/minipix/eyJTaG9lcyI6IjEiLCJQYW50cyI6IjEiLCJKYWNrZXQiOiIyIiwiSGF0IjoiNSIsImV5ZXNUb25lIjoiMDBhZWVmIiwicGFudHNUb25lIjoiMDA5OWRkIiwicGFudHNUb25lMiI6IjAwOTlkZCIsInNob2VzVG9uZSI6IjAwOTlkZCIsImhhdFRvbmUiOiIwMDk5ZGQiLCJoYXRUb25lMiI6IjAwYWVlZiIsImphY2tldFRvbmUiOiIwMDk5ZGQiLCJqYWNrZXRUb25lMiI6IjAwOTlkZCJ9/1/show.png";
 
@@ -30,7 +29,7 @@ const player1 = {
     height: 85, 
     dx: 0,
     dy: 0,
-    speed: 5, // Reset speed for player1
+    speed: 2,
     jumpPower: -15,
     grounded: false,
 };
@@ -42,7 +41,7 @@ const player2 = {
     height: 85, 
     dx: 0,
     dy: 0,
-    speed: 5, // Reset speed for player2
+    speed: 2,
     jumpPower: -15,
     grounded: false,
 };
@@ -57,10 +56,19 @@ const platform = {
 
 // Moving walls
 let movingWalls = [
-    { x: canvas.width, y: canvas.height - 100, width: 20, height: 125, color: "#FF5722", dx: -3 }, // Wall 1
-    null, // Wall 2
-    null, // Wall 3
-    null  // Wall 4
+    { x: canvas.width, y: canvas.height - 100, width: 20, height: 125, color: "#FF5722", dx: -2 },
+];
+
+let platformCounter = 0; // Track how many walls have disappeared
+let platforms = []; // Array to hold platforms
+
+// Initial platforms
+const initialPlatforms = [
+    { x: 200, y: canvas.height - 200, width: 100, height: 15, color: "#0000FF" }, // Smaller size
+    { x: 400, y: canvas.height - 250, width: 120, height: 15, color: "#FF0000" }, // Smaller size
+    { x: 600, y: canvas.height - 300, width: 150, height: 15, color: "#FFFF00" }, // Smaller size
+    { x: 800, y: canvas.height - 350, width: 120, height: 15, color: "#00FF00" }, // Smaller size
+    { x: 1000, y: canvas.height - 400, width: 150, height: 15, color: "#FF00FF" }, // Smaller size
 ];
 
 const keys = {
@@ -72,7 +80,6 @@ const keys = {
     up2: false,
 };
 
-// Camera object
 const camera = {
     x: 0,
     y: 0,
@@ -89,7 +96,8 @@ document.addEventListener("keydown", (event) => {
     }
     if (event.code === "KeyD") keys.right2 = true;
     if (event.code === "KeyA") keys.left2 = true;
-    if (event.code === "KeyW" && player2.grounded) {
+    if (event.code === "KeyW") {
+        // Allow player2 to jump even if grounded status is false
         player2.dy = player2.jumpPower;
         player2.grounded = false;
     }
@@ -132,25 +140,41 @@ function checkWallCollision(player, wall) {
 
 // Update function for the moving walls
 function updateMovingWalls() {
-    for (let i = 0; i < movingWalls.length; i++) {
-        if (movingWalls[i]) {
-            movingWalls[i].x += movingWalls[i].dx;
-            if (movingWalls[i].x + movingWalls[i].width < 0) {
+    movingWalls.forEach((wall, i) => {
+        if (wall) {
+            wall.x += wall.dx;
+            if (wall.x + wall.width < 0) {
                 movingWalls[i] = null; // Remove the wall (it disappears)
-                
+                platformCounter++; // Increment the counter
                 // Create a new wall only if the current index is less than 3
                 if (i < 3) {
                     movingWalls[i + 1] = {
                         x: canvas.width, // Start from the right edge of the screen
                         y: canvas.height - 100,
                         width: 20,
-                        height: 75 - (i * 10), // Different heights for each wall
-                        color: i === 0 ? "#FF0000" : (i === 1 ? "#0000FF" : "#FFFF00"), // Different colors
-                        dx: -(3 + i) // Increase speed for each subsequent wall
+                        height: 120 - (i * 12), // Different heights for each wall
+                        color: i === 0 ? "#51414F" : (i === 1 ? "#7B3F00" : "#FFFF00"), // Different colors
+                        dx: -(1 + i) // Increase speed for each subsequent wall
                     };
                 }
             }
         }
+    });
+
+    // Create platforms after the 4th wall disappears
+    if (platformCounter >= 4 && platforms.length === 0) {
+        initialPlatforms.forEach(platformData => {
+            platforms.push(platformData);
+        });
+    }
+}
+
+function checkPlatformCollision(player) {
+    // Check collision with the original platform
+    if (player.y + player.height >= platform.y && player.x + player.width >= platform.x && player.x <= platform.x + platform.width) {
+        player.y = platform.y - player.height; // Position player above the platform
+        player.dy = 0;
+        player.grounded = true; // Set grounded
     }
 }
 
@@ -175,7 +199,7 @@ function update() {
     if (!player1.grounded) {
         player1.dy += gravity * fallSpeedModifier;
     }
-    
+
     if (!player2.grounded) {
         player2.dy += gravity * fallSpeedModifier;
     }
@@ -220,22 +244,39 @@ function update() {
         player2.grounded = true;
     }
 
-    // Platform collision detection
-    if (player1.y + player1.height >= platform.y && player1.x + player1.width >= platform.x && player1.x <= platform.x + platform.width) {
-        player1.y = platform.y - player1.height;
-        player1.dy = 0;
-        player1.grounded = true;
-    } else {
-        player1.grounded = false;
-    }
+    // Check collisions with the original platform
+    checkPlatformCollision(player1);
+    checkPlatformCollision(player2);
 
-    if (player2.y + player2.height >= platform.y && player2.x + player2.width >= platform.x && player2.x <= platform.x + platform.width) {
-        player2.y = platform.y - player2.height;
-        player2.dy = 0;
-        player2.grounded = true;
-    } else {
-        player2.grounded = false;
-    }
+    // Check collisions with additional platforms
+    platforms.forEach(p => {
+        // Player 1 Collision
+        if (player1.x + player1.width >= p.x && player1.x <= p.x + p.width && player1.y + player1.height >= p.y && player1.y <= p.y + p.height) {
+            if (player1.dy > 0) {
+                player1.y = p.y - player1.height; // Position player above the platform
+                player1.dy = 0;
+                player1.grounded = true; // Set grounded
+            }
+        }
+
+        // Player 2 Collision
+        if (player2.x + player2.width >= p.x && player2.x <= p.x + p.width && player2.y + player2.height >= p.y && player2.y <= p.y + p.height) {
+            if (player2.dy > 0) {
+                player2.y = p.y - player2.height; // Position player above the platform
+                player2.dy = 0;
+                player2.grounded = true; // Set grounded
+            }
+        }
+
+        // Check if players fall off the floating platforms
+        if (player1.x < p.x || player1.x + player1.width > p.x + p.width || player1.y > p.y) {
+            player1.grounded = false; // Set to not grounded
+        }
+
+        if (player2.x < p.x || player2.x + player2.width > p.x + p.width || player2.y > p.y) {
+            player2.grounded = false; // Set to not grounded
+        }
+    });
 
     // Check collisions with all moving walls
     movingWalls.forEach(wall => {
@@ -252,7 +293,7 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw platform
+    // Draw the original platform
     ctx.fillStyle = platform.color;
     ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
 
@@ -267,8 +308,20 @@ function draw() {
             ctx.fillRect(wall.x, wall.y - wall.height, wall.width, wall.height);
         }
     });
+
+    // Draw additional platforms
+    platforms.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.width, p.height);
+    });
 }
 
+// Start the game loop when the images are loaded
+player1Image.onload = player2Image.onload = () => {
+    gameLoop();
+};
+
+// Main game loop
 function gameLoop() {
     update();
     draw();
