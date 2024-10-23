@@ -42,7 +42,7 @@ const platform = {
     y: canvas.height - 100,
     width: 500000, 
     height: 10, 
-    color: "#006400",
+    color: "#56BA3F",
 };
 
 let movingWalls = [
