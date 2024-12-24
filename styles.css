@@ -80,11 +80,18 @@ canvas {
     z-index: 2;
 }
 
-/* New class for tech competition background */
+
 .background_tech_competition_2 {
     background-image: url('Tech_competition_background_2.png') 
     no-repeat 
     center center fixed;
     background-size: cover;
     z-index: 4;
+}
+
+.falling-item {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    border-radius: 50%;
 }
