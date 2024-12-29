@@ -107,6 +107,8 @@ const flag = {
     visible: false,
 };
 
+
+
 let gameOver = false;
 let winMessage = "";
 let gameStarted = false;
@@ -227,7 +229,8 @@ let drawtenthPopup = false;
 let drawEleventhPopup = false;
 let drawTwelfthPopup = false;
 let drawThirteenthPopup = false;
-
+let drawFourteenthPopup = false;
+let drawFifteenthPopup = false;
 
 function checkFlagCollision(player) {
     if (flag.visible &&
@@ -237,11 +240,11 @@ function checkFlagCollision(player) {
         player.y <= flag.y + flag.height) {
         if (player === player1) {
             console.log("player 1 touched the flag");
-            player1Score++;
+            player1Score+= 5;
             document.body.classList.add("background_tech_competition_2"); 
         } else if (player === player2) {
             console.log("player 2 touched the flag");
-            player2Score++;
+            player2Score+= 5;
             document.body.classList.add("background_tech_competition_2");
         }
         flag.visible = false;
@@ -250,7 +253,6 @@ function checkFlagCollision(player) {
         
     }
 }
-
 
 function checkPlatformCollision(player) {
     let isOnPlatform = false;
@@ -351,6 +353,49 @@ function update() {
     updateCamera();
 }
 
+let flagCollectionCount = 0; // Tracks how many times the flag has been collected
+
+function checkFlagCollision(player) {
+    if (
+        flag.visible &&
+        player.x + player.width >= flag.x &&
+        player.x <= flag.x + flag.width &&
+        player.y + player.height >= flag.y &&
+        player.y <= flag.y + flag.height
+    ) {
+        flag.visible = false; // Hide the flag after collection
+
+        // Award points to the player
+        if (player === player1) {
+            player1Score += 5;
+            console.log("Player 1 touched the flag and gained 5 points.");
+        } else if (player === player2) {
+            player2Score += 5;
+            console.log("Player 2 touched the flag and gained 5 points.");
+        }
+
+        document.body.classList.add("background_tech_competition_2");
+
+        // Trigger the appropriate popup based on flag collection count
+        if (flagCollectionCount === 0) {
+            showSecondPopup = true; // First collection triggers the second popup
+        } else if (flagCollectionCount === 1) {
+            drawFourteenthPopup = true; // Second collection triggers the seventh popup
+        }
+
+        flagCollectionCount++; // Increment the flag collection counter
+    }
+}
+
+
+
+
+
+
+
+
+
+
 canvas.addEventListener("click", function () {
     if (showSecondPopup) {
         showSecondPopup = false;
@@ -374,16 +419,16 @@ canvas.addEventListener("click", function () {
         console.log("Sixth popup dismissed, thirteenth popup triggered.")
     }  else if (drawSeventhPopup) {
         drawSeventhPopup = false;
-        drawTwelfthPopup = true;
-        console.log("seventh popup dismissed, twelfth popup triggered.")
+        draweigthPopup = true;
+        console.log("seventh popup dismissed, eight popup triggered.")
     }  else if (draweigthPopup) {
         draweigthPopup = false;
         drawninthPopup = true;
         console.log("eight popup dismissed, ninth popup triggered.")
     }  else if (drawninthPopup) {
         drawninthPopup = false;
-        drawtenthPopup = true;
-        console.log("ninth popup dismissed, tenth popup triggered.")
+        drawFifteenthPopup = true;
+        console.log("ninth popup dismissed, fifteenth popup triggered.")
     } else if (drawtenthPopup) {
         drawtenthPopup = false;
         drawEleventhPopup = true;
@@ -395,9 +440,18 @@ canvas.addEventListener("click", function () {
         drawTwelfthPopup = false;
         console.log("twelfth popup dismissed.")
     } else if (drawThirteenthPopup) {
-        drawThirteenthPopup = false;
-        console.log("Thirteenth popup dismissed.")
-    
+        drawThirteenthPopup = false; 
+        coinVisible = true; 
+        generateRandomCoins(20);
+        console.log("Thirteenth popup dismissed, 20 coins created.");
+    } else if (drawFourteenthPopup) {
+        drawFourteenthPopup= false; 
+        drawSeventhPopup = true;
+        console.log("Fourteenth popup dismissed, seventh popup triggered.");
+    } else if (drawFifteenthPopup) {
+        drawFifteenthPopup= false;
+        movingFloatingPlatforms = true;
+        console.log("Fifteenth popup dismissed, floating platforms are now moving.");
     }
     
 });
@@ -406,6 +460,7 @@ function drawCanvas() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -442,7 +497,7 @@ function draw() {
         ctx.fillRect(flag.x, flag.y, flag.width, flag.height);
     }
 
-  
+
     ctx.fillStyle = "#FFD700";
     ctx.font = "24px Arial";
     ctx.fillText(`Player 1 Score: ${player1Score}`, 10, 30);
@@ -544,8 +599,7 @@ function draw() {
         ctx.fillText("Click anywhere to continue.", canvas.width / 2 - 200, canvas.height / 2 + 40);
     }
     
-    
-    /* if (drawSeventhPopup) {
+     if (drawSeventhPopup) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#000";
@@ -556,8 +610,8 @@ function draw() {
         ctx.fillText("It is used to style and design the layout of web pages.", canvas.width / 2 - 380, canvas.height / 2 - 20);
         ctx.fillText("CSS controls things like colors, fonts, and spacing.", canvas.width / 2 - 380, canvas.height / 2 + 20);
         ctx.fillText("Click Anywhere to Continue!", canvas.width / 2 - 380, canvas.height / 2 + 60);
-    }*/
-    /* if (draweigthPopup) {
+    }
+     if (draweigthPopup) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#000";
@@ -566,13 +620,13 @@ function draw() {
         ctx.font = "24px Arial";
         
         ctx.fillText("1. A programming language", canvas.width / 2 - 140, canvas.height / 2 - 40);
-        ctx.fillText("2. A style sheet language", canvas.width / 2 - 140, canvas.height / 2);
+        ctx.fillText("2. Cascading Style Sheets", canvas.width / 2 - 140, canvas.height / 2);
         ctx.fillText("3. A database management system", canvas.width / 2 - 140, canvas.height / 2 + 40);
     
         ctx.font = "20px Arial";
         ctx.fillText("Click Anywhere to know the answer", canvas.width / 2 - 180, canvas.height / 2 + 100);
-    }*/
-   /* if (drawninthPopup) {
+    }
+    if (drawninthPopup) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#000";
@@ -585,9 +639,9 @@ function draw() {
     
         ctx.font = "20px Arial";
         ctx.fillText("Click Anywhere to continue", canvas.width / 2 - 140, canvas.height / 2 + 60);
-    } */
+    } 
 
-    /* if (drawtenthPopup) {
+     if (drawtenthPopup) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#000";
@@ -598,9 +652,9 @@ function draw() {
         ctx.fillText("It is used to add interactivity, or to allow people to interact to web pages.", canvas.width / 2 - 380, canvas.height / 2 - 20);
         ctx.fillText("JavaScript makes websites dynamic and responsive.", canvas.width / 2 - 380, canvas.height / 2 + 20);
         ctx.fillText("Click Anywhere to Take the Review Test!", canvas.width / 2 - 380, canvas.height / 2 + 60);
-    }*/
+    }
 
-   /* if (drawEleventhPopup) {
+    if (drawEleventhPopup) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#000";
@@ -628,7 +682,7 @@ function draw() {
         
         ctx.font = "20px Arial";
         ctx.fillText("Click Anywhere to continue", canvas.width / 2 - 180, canvas.height / 2 + 60);
-    }*/
+    }
 
         if (drawThirteenthPopup) {
             ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
@@ -639,19 +693,139 @@ function draw() {
             
             ctx.font = "24px Arial";
             ctx.fillText("It appears that as we were going through the portal, we lost some of our coins!", canvas.width / 2 - 180, canvas.height / 2 - 40);
-            ctx.fillText("Every coin you collect, you will earn 2 points.", canvas.width / 2 - 180, canvas.height / 2);
-            
+            ctx.fillText("But wait a minute, it appears as if the Platforms stayed with us as we went through the portal.", canvas.width / 2 - 180, canvas.height / 2);
+            ctx.fillText("Use the Platforms to get to the Coins. Every Coin you collect will give you 2 points!", canvas.width / 2 - 180, canvas.height / 2 + 20);
             ctx.font = "20px Arial";
             ctx.fillText("Click Anywhere to continue", canvas.width / 2 - 180, canvas.height / 2 + 60);
         }
+        
+        if (drawFourteenthPopup) {
+            ctx.fillStyle = "rgba(300, 300, 300, 0.9)";
     
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#000000";
+            ctx.font = "32px Arial";
+    
+            ctx.fillText("Good Job Getting Past the Second World! Now Let's Start learning about CSS!", canvas.width / 2 - 600, canvas.height / 2 - 120);
+            ctx.fillText("CSS is the 2nd Coding Languege I used in my Project.", canvas.width / 2 - 600, canvas.height / 2 - 80);
+            ctx.fillText("Click Anywhere to Learn More!", canvas.width / 2 - 600, canvas.height / 2 - 40);
+        }
+        if (drawFifteenthPopup) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#000";
+            ctx.font = "32px Arial";
+            ctx.fillText("Congratulations!", canvas.width / 2 - 150, canvas.height / 2 - 100);
+            
+            ctx.font = "24px Arial";
+            ctx.fillText("You have finished Lesson 2.", canvas.width / 2 - 200, canvas.height / 2 - 20);
+            ctx.fillText("You know Now the basics of CSS!", canvas.width / 2 - 200, canvas.height / 2);
+            ctx.fillText("Once you complete the final world, world 3, you will learn more about JavaScript.", canvas.width / 2 - 200, canvas.height / 2 + 20);
+            ctx.fillText("Click anywhere to continue.", canvas.width / 2 - 200, canvas.height / 2 + 40);
+        }
+}
+let drawcoin = [];
+let coinVisible = false;
+let totalCoinsCollected = 0;
+
+const canvasWidth = 800; 
+const canvasHeight = 600;
+
+function createCoin(x, y) {
+    let coin = {
+        x: x,
+        y: y,
+        radius: 10,
+        fillColor: 'gold',
+        strokeColor: 'darkgoldenrod',
+        lineWidth: 3
+    };
+    drawcoin.push(coin);
+    console.log(`Coin created at (${x}, ${y}). Total coins: ${drawcoin.length}`);
 }
 
+function checkCoinCollision() {
+    if (drawcoin.length === 0) {
+        coinVisible = false;
+        return;
+    }
+
+    drawcoin.forEach((coin, index) => {
+        if (player1.x < coin.x + coin.radius &&
+            player1.x + player1.width > coin.x - coin.radius &&
+            player1.y < coin.y + coin.radius &&
+            player1.y + player1.height > coin.y - coin.radius) {
+            player1Score += 2;
+            drawcoin.splice(index, 1);
+            totalCoinsCollected++;
+            console.log(`Player 1 collected a coin! Score: ${player1Score}, Total Coins: ${totalCoinsCollected}`);
+        }
+
+        if (player2.x < coin.x + coin.radius &&
+            player2.x + player2.width > coin.x - coin.radius &&
+            player2.y < coin.y + coin.radius &&
+            player2.y + player2.height > coin.y - coin.radius) {
+            player2Score += 2;
+            drawcoin.splice(index, 1);
+            totalCoinsCollected++;
+            console.log(`Player 2 collected a coin! Score: ${player2Score}, Total Coins: ${totalCoinsCollected}`);
+        }
+    });
+
+    if (drawcoin.length === 0) {
+        coinVisible = false;
+    }
+
+    if (totalCoinsCollected === 20) {
+        flag.visible = true;
+        console.log("All coins collected! Flag is now visible.");
+    }
+}
 
 function gameLoop() {
-    update();
+    update(); 
+    checkCoinCollision(); 
     draw();
+
+    if (coinVisible) {
+        console.log("Drawing coins...");
+        drawcoin.forEach(coin => {
+            drawCoin(coin.x, coin.y, coin.radius, coin.fillColor, coin.strokeColor, coin.lineWidth);
+        });
+        console.log(`Total coins drawn: ${drawcoin.length}`);
+    }
+
     requestAnimationFrame(gameLoop);
 }
+
+function drawCoin(x, y, radius, fillColor, strokeColor, lineWidth) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(x, y, radius - 5, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'saddlebrown';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
+
+function generateRandomCoins(numCoins) {
+    totalCoinsCollected = 0; 
+    drawcoin = []; 
+    for (let i = 0; i < numCoins; i++) {
+        const x = Math.random() * (canvasWidth - 50) + 25;
+        const y = Math.random() * (canvasHeight - 110) + 115; 
+        createCoin(x, y);
+    }
+    coinVisible = true;
+    console.log(`${numCoins} coins generated. Total coins collected reset to 0.`);
+}
+
 
 gameLoop();
