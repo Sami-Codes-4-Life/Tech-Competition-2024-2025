@@ -1,6 +1,9 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+console.log(`Canvas Width: ${canvas.width}, Canvas Height: ${canvas.height}`);
+
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -101,12 +104,13 @@ let player2Score = 0;
 const flag = {
     x: 0,
     y: 0,
-    width: 20,
-    height: 70,
-    color: "#FFFFFE",
+    width: 90,
+    height: 90,
     visible: false,
 };
 
+const flagImage = new Image();
+flagImage.src = "Portal_for_Video_game.png";
 
 
 let gameOver = false;
@@ -182,8 +186,6 @@ function checkWallCollision(player, wall) {
         }
     }
 }
-
-
 
 function updateMovingWalls() {
     if (popUpVisible) return;
@@ -353,7 +355,7 @@ function update() {
     updateCamera();
 }
 
-let flagCollectionCount = 0; // Tracks how many times the flag has been collected
+let flagCollectionCount = 0; 
 
 function checkFlagCollision(player) {
     if (
@@ -363,9 +365,9 @@ function checkFlagCollision(player) {
         player.y + player.height >= flag.y &&
         player.y <= flag.y + flag.height
     ) {
-        flag.visible = false; // Hide the flag after collection
+        flag.visible = false; 
 
-        // Award points to the player
+       
         if (player === player1) {
             player1Score += 5;
             console.log("Player 1 touched the flag and gained 5 points.");
@@ -376,24 +378,17 @@ function checkFlagCollision(player) {
 
         document.body.classList.add("background_tech_competition_2");
 
-        // Trigger the appropriate popup based on flag collection count
+      
         if (flagCollectionCount === 0) {
-            showSecondPopup = true; // First collection triggers the second popup
+            showSecondPopup = true; 
         } else if (flagCollectionCount === 1) {
-            drawFourteenthPopup = true; // Second collection triggers the seventh popup
+            drawFourteenthPopup = true;
+            document.body.classList.add("World_3_background");
         }
 
-        flagCollectionCount++; // Increment the flag collection counter
+        flagCollectionCount++; 
     }
 }
-
-
-
-
-
-
-
-
 
 
 canvas.addEventListener("click", function () {
@@ -449,9 +444,21 @@ canvas.addEventListener("click", function () {
         drawSeventhPopup = true;
         console.log("Fourteenth popup dismissed, seventh popup triggered.");
     } else if (drawFifteenthPopup) {
-        drawFifteenthPopup= false;
-        movingFloatingPlatforms = true;
-        console.log("Fifteenth popup dismissed, floating platforms are now moving.");
+        drawFifteenthPopup = false;
+        console.log("Fifteenth popup dismissed.");
+        document.body.classList.add("hidden-background");
+        document.body.classList.add("background_world_3");
+        const backgroundImage = new Image();
+        backgroundImage.src = "World_3_background.png";
+        backgroundImage.onload = () => {
+            console.log("New background image loaded successfully.");
+            ctx.clearRect(600, 600, gameCanvas.width, gameCanvas.height); 
+            ctx.drawImage(backgroundImage, 0, 0, gameCanvas.width, gameCanvas.height); 
+            console.log("Background changed to World_3_background.png.");
+        };
+        backgroundImage.onerror = () => {
+            console.error("Failed to load World_3_background.png. Check the file path.");
+        };
     }
     
 });
@@ -464,14 +471,15 @@ function drawCanvas() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
     if (document.body.classList.contains("background_tech_competition_2")) {
-        const backgroundImage = new Image();
-        backgroundImage.src = "Tech_competition_background_2.png";
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-    } else {
-        
+       
+        if (!document.body.classList.contains("background_world_3")) {
+            const backgroundImage = new Image();
+            backgroundImage.src = "Tech_competition_background_2.png";
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        }
     }
+    
 
  
     ctx.fillStyle = platform.color;
@@ -491,10 +499,8 @@ function draw() {
 
     ctx.drawImage(player1Image, player1.x, player1.y, player1.width, player1.height);
     ctx.drawImage(player2Image, player2.x, player2.y, player2.width, player2.height);
-
     if (flag.visible) {
-        ctx.fillStyle = flag.color;
-        ctx.fillRect(flag.x, flag.y, flag.width, flag.height);
+        ctx.drawImage(flagImage, flag.x, flag.y, flag.width, flag.height);
     }
 
 
@@ -510,7 +516,7 @@ function draw() {
         ctx.font = "24px Arial";
         ctx.fillText(winMessage, canvas.width / 2 - 100, canvas.height / 2);
     }
-
+movingWalls
 
     if (popUpVisible) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
@@ -725,6 +731,7 @@ function draw() {
             ctx.fillText("Click anywhere to continue.", canvas.width / 2 - 200, canvas.height / 2 + 40);
         }
 }
+
 let drawcoin = [];
 let coinVisible = false;
 let totalCoinsCollected = 0;
@@ -815,12 +822,13 @@ function drawCoin(x, y, radius, fillColor, strokeColor, lineWidth) {
     ctx.stroke();
 }
 
+
 function generateRandomCoins(numCoins) {
     totalCoinsCollected = 0; 
     drawcoin = []; 
     for (let i = 0; i < numCoins; i++) {
         const x = Math.random() * (canvasWidth - 50) + 25;
-        const y = Math.random() * (canvasHeight - 110) + 115; 
+        const y = Math.random() * (canvasHeight - 120) + 150; 
         createCoin(x, y);
     }
     coinVisible = true;
