@@ -1,3 +1,12 @@
+#gameCanvas {
+    width: 100%; /* Adjust width based on your game's design */
+    height: 100%; /* Adjust height based on your game's design */
+    background-color: transparent; /* Prevent any background color if drawing on the canvas */
+    display: block; /* Remove any default margins */
+    margin: 0 auto; /* Center the canvas if necessary */
+}
+
+
 body {
     margin: 0;
     overflow: hidden;
@@ -82,16 +91,30 @@ canvas {
 
 
 .background_tech_competition_2 {
-    background-image: url('Tech_competition_background_2.png') 
-    no-repeat 
-    center center fixed;
+    background-image: url('Tech_competition_background_2.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
     background-size: cover;
     z-index: 4;
 }
-
-.falling-item {
-    width: 20px;
-    height: 20px;
-    background-color: red;
-    border-radius: 50%;
+.background_world_3 {
+    background-image: url('World_3_background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    z-index: 9; 
 }
+
+
+.hidden-background .sky,
+.hidden-background .city,
+.hidden-background .ground {
+    visibility: hidden; 
+    z-index: -1; 
+    pointer-events: none; 
+}
+
+
+
