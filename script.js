@@ -3,7 +3,6 @@ const ctx = canvas.getContext("2d");
 
 console.log(`Canvas Width: ${canvas.width}, Canvas Height: ${canvas.height}`);
 
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -17,18 +16,15 @@ const player2Image = new Image();
 player2Image.src = "Character_Image_2.png";
 
 
-
 const backgroundMusic = new Audio("Song_for_Tech_Competition_2024-2025.mp3"); 
 backgroundMusic.loop = true; 
 backgroundMusic.volume = 0.4; 
-
 
 function startBackgroundMusic() {
     backgroundMusic.play().catch(error => {
         console.error("Error playing background music:", error);
     });
 }
-
 
 function stopBackgroundMusic() {
     backgroundMusic.pause();
@@ -45,6 +41,7 @@ const player1 = {
     speed: 7,
     jumpPower: -15,
     grounded: false,
+    isOnPlatform: false,
 };
 
 const player2 = {
@@ -57,6 +54,7 @@ const player2 = {
     speed: 7,
     jumpPower: -15,
     grounded: false,
+    isOnPlatform: false,
 };
 
 const platform = {
@@ -112,12 +110,10 @@ const flag = {
 const flagImage = new Image();
 flagImage.src = "Portal_for_Video_game.png";
 
-
 let gameOver = false;
 let winMessage = "";
 let gameStarted = false;
 let instructionsDisplayed = false;
-
 
 let popUpVisible = true;
 
@@ -153,7 +149,6 @@ canvas.addEventListener("click", () => {
         startBackgroundMusic();
     }
 });
-
 
 function updateCamera() {
     camera.x = player1.x + player1.width / 2 - camera.width / 2;
@@ -219,6 +214,7 @@ function updateMovingWalls() {
 
     }
 }
+
 let showSecondPopup = false;
 let drawThirdPopup = false;
 let showFourthPopup = false;
@@ -250,15 +246,11 @@ function checkFlagCollision(player) {
             document.body.classList.add("background_tech_competition_2");
         }
         flag.visible = false;
-        showSecondPopup = true;
-        
-        
-    }
+        showSecondPopup = true;}
 }
-
 function checkPlatformCollision(player) {
     let isOnPlatform = false;
-
+    player.isOnPlatform = false;
     if (player.y + player.height >= platform.y && player.x + player.width >= platform.x && player.x <= platform.x + platform.width) {
         player.y = platform.y - player.height;
         player.dy = 0;
@@ -273,6 +265,7 @@ function checkPlatformCollision(player) {
                 player.dy = 0;
                 player.grounded = true;
                 isOnPlatform = true;
+                player.isOnPlatform = true;
             }
         }
     });
@@ -286,6 +279,34 @@ function checkPlatformCollision(player) {
 
 
 
+
+function CheckfloatingplatformCollision(player) {
+    let isOnPlatform = false;
+    player.isOnPlatform = false;
+    if (player.y + player.height >= platform.y && player.x + player.width >= platform.x && player.x <= platform.x + platform.width) {
+        player.y = platform.y - player.height;
+        player.dy = 0;
+        player.grounded = true;
+        isOnPlatform = true;
+    }
+FloatingPlatforms.forEach(p => {
+        if (player.x + player.width >= p.x && player.x <= p.x + p.width && player.y + player.height >= p.y && player.y <= p.y + p.height) {
+            if (player.dy > 0) {
+                player.y = p.y - player.height;
+                player.dy = 0;
+                player.grounded = true;
+                isOnPlatform = true;
+                player.isOnPlatform = true;
+            }
+        }
+    });
+
+    if (!isOnPlatform) {
+        player.grounded = false;
+    }
+
+    checkFlagCollision(player);
+}
 
 
 function update() {
@@ -339,7 +360,6 @@ function update() {
     if (player2.x < 0) player2.x = 0;
     if (player2.x + player2.width > canvas.width) player2.x = canvas.width - player2.width;
 
-
     
     movingWalls.forEach(wall => {
         if (wall) {
@@ -384,12 +404,13 @@ function checkFlagCollision(player) {
         } else if (flagCollectionCount === 1) {
             drawFourteenthPopup = true;
             document.body.classList.add("World_3_background");
+        } else if (flagCollectionCount === 2) {
+            drawtenthPopup = true;
         }
-
+ 
         flagCollectionCount++; 
     }
 }
-
 
 canvas.addEventListener("click", function () {
     if (showSecondPopup) {
@@ -423,6 +444,7 @@ canvas.addEventListener("click", function () {
     }  else if (drawninthPopup) {
         drawninthPopup = false;
         drawFifteenthPopup = true;
+        xIncrease = 2;
         console.log("ninth popup dismissed, fifteenth popup triggered.")
     } else if (drawtenthPopup) {
         drawtenthPopup = false;
@@ -459,9 +481,35 @@ canvas.addEventListener("click", function () {
         backgroundImage.onerror = () => {
             console.error("Failed to load World_3_background.png. Check the file path.");
         };
+        flag.visible = true;
     }
     
 });
+
+const pointPositions = [
+    { x: FloatingPlatforms[0].x + FloatingPlatforms[0].width / 2, y: FloatingPlatforms[0].y - 30 },
+    { x: FloatingPlatforms[1].x + FloatingPlatforms[1].width / 2, y: FloatingPlatforms[1].y - 30 },
+    { x: FloatingPlatforms[2].x + FloatingPlatforms[2].width / 2, y: FloatingPlatforms[2].y - 30 },
+    { x: FloatingPlatforms[3].x + FloatingPlatforms[3].width / 2, y: FloatingPlatforms[3].y - 30 }
+];
+
+function drawPoints(ctx) {
+    ctx.save(); 
+    pointPositions.forEach(position => {
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, 15, 0, Math.PI * 2);
+        ctx.fillStyle = "gold";
+        ctx.fill();
+        ctx.strokeStyle = "darkgoldenrod";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.closePath();
+    });
+    ctx.restore(); 
+}
+
+platform
+
 
 function drawCanvas() {
 
@@ -477,18 +525,9 @@ function draw() {
             const backgroundImage = new Image();
             backgroundImage.src = "Tech_competition_background_2.png";
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-        }
+        }  
     }
-    
-
- 
-    ctx.fillStyle = platform.color;
-    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-
-    platforms.forEach(p => {
-        ctx.fillStyle = p.color;
-        ctx.fillRect(p.x, p.y, p.width, p.height);
-    });
+    this.drawRectangle(ctx);
 
     movingWalls.forEach(wall => {
         if (wall) {
@@ -502,7 +541,6 @@ function draw() {
     if (flag.visible) {
         ctx.drawImage(flagImage, flag.x, flag.y, flag.width, flag.height);
     }
-
 
     ctx.fillStyle = "#FFD700";
     ctx.font = "24px Arial";
@@ -731,6 +769,51 @@ movingWalls
             ctx.fillText("Click anywhere to continue.", canvas.width / 2 - 200, canvas.height / 2 + 40);
         }
 }
+let rectX = [100, 400, 700, 1000, 1300];
+let xIncrease = 0;
+let moveRight = true;
+
+function drawRectangle(ctx){
+    ctx.fillStyle = platform.color;
+    canCall = false;
+    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+    for (let i = 0; i < platforms.length; i++) {  
+        ctx.fillStyle = platforms[i].color;
+        ctx.fillRect(rectX[i], platforms[i].y, platforms[i].width, platforms[i].height);
+        if (moveRight) {
+            if (rectX[i] + xIncrease < canvas.width) {
+                rectX[i] += xIncrease;
+                if(player1.isOnPlatform){
+                    player1.x += xIncrease;
+                }
+                if(player2.isOnPlatform){
+                    player2.x += xIncrease;
+                }
+            } else {
+                moveRight = false;
+            }
+        }
+        else
+        {
+            if (rectX[i] - xIncrease > 0) {
+                rectX[i] -= xIncrease;
+                if(player1.isOnPlatform){
+                    player1.x -= xIncrease;
+                }
+                if(player2.isOnPlatform){
+                    player2.x -= xIncrease;
+                }
+            } else {
+                moveRight = true;
+            }
+        }
+
+    }
+}
+
+
+
+
 
 let drawcoin = [];
 let coinVisible = false;
@@ -822,7 +905,6 @@ function drawCoin(x, y, radius, fillColor, strokeColor, lineWidth) {
     ctx.stroke();
 }
 
-
 function generateRandomCoins(numCoins) {
     totalCoinsCollected = 0; 
     drawcoin = []; 
@@ -835,5 +917,5 @@ function generateRandomCoins(numCoins) {
     console.log(`${numCoins} coins generated. Total coins collected reset to 0.`);
 }
 
-
 gameLoop();
+
